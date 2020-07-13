@@ -17,6 +17,23 @@ Note that if you include the manifests in the `garden.yml` file, you can use
 
 If you need more advanced templating features you can use the [helm](https://docs.garden.io/reference/module-types/helm) module type.
 
+{% hint style="info" %}
+**A note on `Namespace` manifests in `kubernetes` modules**
+
+Garden uses special semantics when deploying/deleting `Namespace` resources from `kubernetes` modules..
+
+If you include `Namespace` manifests in your `kubernetes` module, Garden will not delete any namespaces in your
+cluster when you deploy, and the `delete service` and `delete environment` commands will only delete the
+namespaces having the current names of the `Namespace` manifests in your `kubernetes` modules.
+
+This is because deleting namespaces is an aggressive operation, since it also deletes any resources belonging
+to that namespace.
+
+If you want to clean up namespaces created by your `kubernetes` module as part of your pipeline, we recommend
+setting up an `exec` module with a task that runs e.g. `garden delete service <your-kubernetes-module-name>`.
+You can then add a runtime dependency on this task where/if needed.
+{% endhint %}
+
 Below is the full schema reference. For an introduction to configuring Garden modules, please look at our [Configuration
 guide](../../using-garden/configuration-overview.md).
 
